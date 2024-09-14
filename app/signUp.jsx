@@ -11,6 +11,7 @@ import { hp, wp } from '../helpers/common'
 import Input from '../components/Input'
 import { useRef } from 'react'
 import Button from '../components/Button'
+import { supabase } from '../lib/supabase'
 
 const SignUp = () => {
  const router = useRouter()
@@ -28,6 +29,30 @@ const SignUp = () => {
     if(!emailRef.current || !passwordRef.current || !nameRef.current){
         Alert.alert('Sign Up', 'Please fill all the fields!')
         return;
+    }
+    //we trim to remove any blank spaces
+    let name = nameRef.current.trim()
+    let email = emailRef.current.trim()
+    let password = passwordRef.current.trim()
+
+    setloading(true);
+
+    const{data:{session}, error} = await supabase.auth.signUp({
+        email,
+        password,
+        options:{
+            data:{
+                name
+            }
+        }
+    })
+    
+    setloading(false);
+
+    console.log('session', session)
+    console.log('error', error);
+    if(error){
+        Alert.alert('Sign up', error.message);
     }
  }
 
