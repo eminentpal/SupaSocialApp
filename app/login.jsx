@@ -11,6 +11,7 @@ import { hp, wp } from '../helpers/common'
 import Input from '../components/Input'
 import { useRef } from 'react'
 import Button from '../components/Button'
+import { supabase } from '../lib/supabase'
 
 const Login = () => {
  const router = useRouter()
@@ -28,6 +29,22 @@ const Login = () => {
         Alert.alert('Login', 'Please fill all the fields!')
         return;
     }
+    let email = emailRef.current.trim()
+    let password = passwordRef.current.trim()
+
+    setloading(true)
+     const {error} = await supabase.auth.signInWithPassword({
+        email,
+        password
+     })
+    setloading(false);
+
+    console.log('erro', error)
+
+    if(error){
+        Alert.alert('Login', error.message);
+    }
+
  }
 
 

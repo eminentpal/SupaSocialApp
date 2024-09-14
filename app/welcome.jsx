@@ -37,7 +37,7 @@ const Welcome = () => {
             <Text style={styles.loginText}>
                 Already have an account?
             </Text>
-            <Pressable onPress={() => router.push('signUp')}>
+            <Pressable onPress={() => router.push('login')}>
                 <Text  style={[styles.loginText, {color:theme.colors.primaryDark,fontWeight: theme.fonts.semibold,}]}>
                     Login
                 </Text>
