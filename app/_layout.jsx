@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { Stack, useRouter } from 'expo-router'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import { getUserData } from '../services/userService'
 
 
 // we change layout to mainlayout and created
@@ -20,7 +21,7 @@ const _layout = () => {
 
 const MainLayout = () => {
   
-  const {setAuth} = useAuth()
+  const {setAuth, setUserData} = useAuth()
   const router = useRouter()
 
    useEffect(() => {
@@ -31,6 +32,7 @@ const MainLayout = () => {
           //set auth
 
           setAuth(session?.user)
+          updateUserData(session?.user)
          
           //move to home screen
           //using router.replace prevent users
@@ -46,6 +48,11 @@ const MainLayout = () => {
      })
    }, [])
    
+   const updateUserData = async (user) =>{
+      let res = await getUserData(user?.id);
+      if(res.success) setUserData(res.data)
+     
+   }
 
 
   return (
