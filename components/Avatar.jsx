@@ -3,6 +3,7 @@ import React from 'react'
 import { theme } from '../constants/theme'
 import { Image } from 'expo-image'
 import { hp } from '../helpers/common'
+import { getUserImageSrc } from '../services/imageService'
 
 const Avatar = ({
    url,
@@ -12,7 +13,7 @@ const Avatar = ({
 }) => {
   return (
     <View>
-    <Image source={{url}}
+    <Image source={getUserImageSrc(url)}
     transition={100}
     style={[styles.avatar
         , 
@@ -24,4 +25,10 @@ const Avatar = ({
 
 export default Avatar
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    avatar:{
+        borderCurve:'continuous',
+        borderColor: theme.colors.darkLight,
+        borderWidth: 1,
+    }
+})

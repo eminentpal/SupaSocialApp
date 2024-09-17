@@ -12,21 +12,13 @@ import Avatar from '../../components/Avatar'
 
 const Home = () => {
 
-    //const {setAuth} = useAuth()
+    const {setAuth, user} = useAuth()
     const router = useRouter()
-    const onLogout = async () => {
-         //no need for set auth to null since we doing that at layout page
-   
-       // setAuth(null);
-        const {error} = await supabase.auth.signOut();
-        if(error) {
-            Alert.alert('Sign out', "Error signing out!")
-        }
-    }
+
 
    
   return (
-    <ScreenWrapper>
+    <ScreenWrapper bg="white">
       <View style={styles.container}>
        {/* header */}
        <View style={styles.header}>
@@ -40,13 +32,19 @@ const Home = () => {
               <Icon  name="plus" size={hp(3.2)} strokeWidth={2} color={theme.colors.text} />
            </Pressable>
 
-           <Pressable onPress={()=> router.push('profile')}>
-             <Avatar />
+           <Pressable onPress={()=> router.push('[main]/profile')}>
+             <Avatar
+             url={user?.image}
+             size={hp(4.3)}
+             rounded={theme.radius.sm}
+             style={{borderWidth:2}}
+             />
            </Pressable>
+
          </View>
        </View>
       </View>
-      <Button title='logout' onPress={onLogout}/>
+      {/* <Button title='logout' onPress={onLogout}/> */}
     </ScreenWrapper>
   )
 }
