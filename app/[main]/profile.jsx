@@ -28,6 +28,7 @@ const Profile = () => {
 }
 
 
+
 const handleLogout= async () => {
    //show confirm modal
    Alert.alert('Confirm', 'Are you sure you want to log out?', [

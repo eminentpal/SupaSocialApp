@@ -34,7 +34,7 @@ const Home = () => {
 
            <Pressable onPress={()=> router.push('[main]/profile')}>
              <Avatar
-             url={user?.image}
+             uri={user?.image}
              size={hp(4.3)}
              rounded={theme.radius.sm}
              style={{borderWidth:2}}

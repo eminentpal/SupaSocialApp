@@ -1,25 +1,105 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import ScreenWrapper from '../../components/ScreenWrapper'
 import { hp, wp } from '../../helpers/common'
 import { theme } from '../../constants/theme'
 import Header from '../../components/Header'
 import { useAuth } from '../../contexts/AuthContext'
-import { getUserImageSrc } from '../../services/imageService'
+import { getUserImageSrc, uploadFile } from '../../services/imageService'
 import { Image } from 'expo-image'
 import Icon from '../../assets/icons'
 import  Input  from "../../components/Input";
+import Button from '../../components/Button'
+import {updateUser} from '../../services/userService'
+import { useRouter } from 'expo-router'
+import * as ImagePicker from 'expo-image-picker';
 
 const EditProfile = () => {
 
-    const {user} = useAuth()
+    const {user: currrentUser, setUserData} = useAuth()
+    const [loading, setLoading] = useState(false)
+    const router = useRouter()
+    const [user, setUser] = useState({
+        name:'',
+        phoneNumber:'',
+        image:null,
+        bio:'',
+        address:''
+    })
 
-    let imageSource = getUserImageSrc(user.image);
+    useEffect(() =>{
+        if (currrentUser) {
+            
+              setUser(  
+              {  
+                name:currrentUser.name || '',
+                phoneNumber: currrentUser.phoneNumber || '',
+                image: currrentUser.image || '',
+                bio: currrentUser.address || '',
+                address:currrentUser.bio || ''
+            })
+             
+        }
+    },[currrentUser])
+
+ 
+
+  
 
     const onPickImage = async () => {
 
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.7,
+          });
+      
+          
+
+          if (!result.canceled) { 
+            // we used image:result.assets[0]
+            // instead ofimage:result.assets[0].url 
+            //cus its local image
+            setUser({...user, image:result.assets[0]});
+          }
+        };
+
+    
+
+    const onSubmit = async () =>{
+        let userData={...user}
+        let {name, phoneNumber,address,image, bio} = userData
+        if(!name || !phoneNumber || !address || !bio || !image){
+            Alert.alert('Profile', "Please fill all the fields")
+            return;
+        }
+        setLoading(true)
+
+
+
+        if (typeof image == 'object') {
+        //upload image
+        //create a new bucket(i.e folder) first on supabase to store d images
+        let imageRes = await uploadFile('profiles', image?.uri, true)
+         if (imageRes.success) {
+            userData.image = imageRes.data   
+         } else userData = null;
+    }   
+        //update user profile info
+        const res = await updateUser(currrentUser?.id, userData)
+        setLoading(false);
+
+        if (res.success) {
+            setUserData({...currrentUser, ...userData})
+            router.back()
+        }
+
     }
+
+
   
+    let imageSource = user.image && typeof user.image == 'object' ? user.image.uri : getUserImageSrc(user.image);
   
     return (
     <ScreenWrapper>
@@ -40,9 +120,31 @@ const EditProfile = () => {
            <Input  
             icon={<Icon name="user" />}
             placeholder ='Enter your name'
-            value={null}
-            onChangeText={value =>{}}
+            value={user.name}
+            onChangeText={value =>setUser({...user, name:value})}
            />
+
+           <Input  
+            icon={<Icon name="call" />}
+            placeholder ='Enter your phone number '
+            value={user.phoneNumber}
+            onChangeText={value =>setUser({...user, phoneNumber:value})}
+           />
+           <Input  
+            icon={<Icon name="location" />}
+            placeholder ='Enter your location'
+            value={user.address}
+            onChangeText={value =>setUser({...user, address:value})}
+           />
+
+           <Input  
+            placeholder ='Enter your bio'
+            value={user.bio}
+            multiline={true}
+            containerStyle={styles.bio}
+            onChangeText={value =>setUser({...user, bio:value})}
+           />
+           <Button title="Update"  loading={loading} onPress={onSubmit} />
         </View> 
        </ScrollView>
      </View>

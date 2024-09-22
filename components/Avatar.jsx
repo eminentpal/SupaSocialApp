@@ -6,14 +6,14 @@ import { hp } from '../helpers/common'
 import { getUserImageSrc } from '../services/imageService'
 
 const Avatar = ({
-   url,
+   uri,
    size=hp(4.5),
    rounded=theme.radius.md,
    style={}
 }) => {
   return (
     <View>
-    <Image source={getUserImageSrc(url)}
+    <Image source={getUserImageSrc(uri)}
     transition={100}
     style={[styles.avatar
         , 
