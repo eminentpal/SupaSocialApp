@@ -28,7 +28,7 @@ const Home = () => {
               <Icon  name="heart" size={hp(3.2)} strokeWidth={2} color={theme.colors.text} />
            </Pressable>
 
-           <Pressable onPress={()=> router.push('newPost')}>
+           <Pressable onPress={()=> router.push('[main]/newPost')}>
               <Icon  name="plus" size={hp(3.2)} strokeWidth={2} color={theme.colors.text} />
            </Pressable>
 
