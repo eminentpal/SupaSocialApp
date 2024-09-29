@@ -1,5 +1,5 @@
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import ScreenWrapper from '../../components/ScreenWrapper'
 import Button from '../../components/Button'
 import { useAuth } from '../../contexts/AuthContext'
@@ -9,13 +9,33 @@ import { theme } from '../../constants/theme'
 import Icon from '../../assets/icons'
 import { useRouter } from 'expo-router'
 import Avatar from '../../components/Avatar'
+import { fetchPosts } from '../../services/postService'
+import PostCard from '../../components/PostCard'
+import Loading from '../../components/Loading'
 
+//global variable
+var limit = 10
 const Home = () => {
 
     const {setAuth, user} = useAuth()
     const router = useRouter()
+    const [posts, setPosts] = useState([])
 
 
+    useEffect(() => {
+      getPosts()
+    }, [])
+
+    const getPosts = async () =>{
+      //call api here
+       limit = limit + 10;
+
+       console.log('fetch post limit', limit)
+       let res = await fetchPosts(limit)
+       if (res.success) {
+         setPosts(res.data)
+       }
+    }
    
   return (
     <ScreenWrapper bg="white">
@@ -43,6 +63,29 @@ const Home = () => {
 
          </View>
        </View>
+
+      {/* posts */}
+
+      <FlatList 
+      data={posts}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.listStyle}
+      keyExtractor={item => item.id.toString()}
+      renderItem={({item}) => <PostCard
+       item={item}
+       currentUser={user}
+       router={router}
+      
+      />}
+      
+      ListFooterComponent={
+         <View style={{marginVertical: posts.length == 0 ? 200: 30}}>
+               <Loading />
+            </View>     
+      }
+
+      />
+
       </View>
       {/* <Button title='logout' onPress={onLogout}/> */}
     </ScreenWrapper>
