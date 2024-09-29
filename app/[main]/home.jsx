@@ -12,6 +12,7 @@ import Avatar from '../../components/Avatar'
 import { fetchPosts } from '../../services/postService'
 import PostCard from '../../components/PostCard'
 import Loading from '../../components/Loading'
+import { getUserData } from '../../services/userService'
 
 //global variable
 var limit = 10
@@ -22,8 +23,32 @@ const Home = () => {
     const [posts, setPosts] = useState([])
 
 
+    const handlePostEvent = async (payload) => {
+       if(payload.eventType == 'INSERT' && payload?.new?.id){
+         let newPost = {...payload.new};
+         let res = await getUserData(newPost.userId);
+         //if success we set the post to d data else empty object
+         newPost.user = res.success ? res.data : {}
+         //we putting new post first bfr prevPosts 
+         //cus we want the new post to be first on the list
+         setPosts(prevPosts => [newPost, ...prevPosts])
+       } 
+    }
+
     useEffect(() => {
+
+      //Realtime changes when we make new post
+      let postChannel = supabase
+       .channel('post')
+       .on('postgres_changes', {event:'*', schema:'public', table: 'posts'}, handlePostEvent)
+      .subscribe()
+
       getPosts()
+
+      return() => {
+         supabase.removeChannel(postChannel)
+      }
+
     }, [])
 
     const getPosts = async () =>{

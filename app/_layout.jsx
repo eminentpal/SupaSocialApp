@@ -8,7 +8,7 @@ import { getUserData } from '../services/userService'
 
 // we use this to ignore pop up warning messages on our app
 
-LogBox.ignoreLogs(['Warning: TNodeChildrenRenderer', 'Warning:MemoizedTNodeRenderer', 'Warning: TRenderEngineProvider'])
+LogBox.ignoreLogs(['Warning: TNodeChildrenRenderer','Warning: MemoizedTNodeRenderer', 'Warning: TRenderEngineProvider'])
 
 // we change layout to mainlayout and created
 //a separate block of code for _layout
