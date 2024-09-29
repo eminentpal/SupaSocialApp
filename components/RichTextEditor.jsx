@@ -44,6 +44,7 @@ const RichTextEditor = ({
         containerStyle={styles.rich}
         editorStyle={styles.containerStyle}
         placeholder={"What's on your mind?"}
+        onChange={onChange}
        />
     </View>
   )

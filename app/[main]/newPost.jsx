@@ -1,4 +1,4 @@
-import { Pressable, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Pressable, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, TouchableWithoutFeedback, Keyboard, TextInput, Alert } from 'react-native'
 import React, { useRef, useState } from 'react'
 import ScreenWrapper from '../../components/ScreenWrapper'
 import Header from '../../components/Header'
@@ -13,7 +13,15 @@ import Button from '../../components/Button'
 import * as ImagePicker from 'expo-image-picker';
 import { getSupabaseFileUrl } from '../../services/imageService'
 import { Video } from 'expo-av'
+import { createOrUpdatePost } from '../../services/postService'
 
+
+ //component for closing keyboard
+//  const DismissKeyboard =({Children}) =>{
+//   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+//     {Children}
+//   </TouchableWithoutFeedback>
+//  }
 
 const NewPost = () => {
 
@@ -23,6 +31,8 @@ const NewPost = () => {
      const router = useRouter()
      const [loading, setLoading] = useState(false);
      const [file, setFile] = useState(file);
+
+    
 
     const onPick= async (isImage) => {
 
@@ -68,7 +78,7 @@ const NewPost = () => {
        //we want to alsoe use this component for updating posts
        //so we check if the existing post, the image has the part postImage in the file path
 
-       if (file.includes('postImage')) {
+       if (file.includes('postImages')) {
          return 'image;'
        }
        else {
@@ -87,16 +97,47 @@ const NewPost = () => {
      } 
 
      const onSubmit = async () =>{
+        if(!bodyRef.current && !file){
+          Alert.alert('Post', 'Please choose image or add post body')
+          return;
+        }
 
+        let data = {
+          file,
+          body: bodyRef.current,
+          userId: user?.id
+        }
+
+        //create post
+        setLoading(true)
+
+        let res = await  createOrUpdatePost(data);
+        setLoading(false);
+       if (res.success) {
+         setFile(null);
+         bodyRef.current = '';
+         editorRef.current?.setContentHTML('')
+         router.back();
+       } else {
+        Alert.alert('Post', res.msg)
+       }
      }
 
      
 
   return (
+      
+    <TouchableWithoutFeedback
+    //to close keyboard by tapping anywhere on d screen
+    onPress={()=>Keyboard.dismiss()}>
     <ScreenWrapper bg="white">
+    
       <View style={styles.container}>
       <Header title="Create Post" />
+      
+    
       <ScrollView contentContainerStyle={{gap:20}}>
+   
         {/* avatar */}
         <View style={styles.header}>
            <Avatar
@@ -115,12 +156,22 @@ const NewPost = () => {
             </Text>
            </View>
         </View>
+      
         <View style={styles.textEditor}>
            <RichTextEditor
             editorRef={editorRef}
-            onChange={body=> bodyRef.current =body}
+            onChange={body=> bodyRef.current = body}
            />
         </View>
+     
+        <Button 
+      buttonStyle={{height:hp(6.2)}}
+      title='Post'   
+      loading={loading}
+      hasShadow={false}
+      onPress={onSubmit}
+
+      />
          {
           file && (
             <View style={styles.file}>
@@ -159,19 +210,18 @@ const NewPost = () => {
              </TouchableOpacity>
            </View>
         </View>
-      </ScrollView>
-      <Button 
-      buttonStyle={{height:hp(6.2)}}
-      title='Post'   
-      loading={loading}
-      hasShadow={false}
-      onPress={onSubmit}
+  
 
-      />
+  
+      </ScrollView>
+   
+    
       
       </View>
       
     </ScreenWrapper>
+    </TouchableWithoutFeedback>
+  
   )
 }
 
