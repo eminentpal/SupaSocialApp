@@ -43,12 +43,17 @@ const PostCard = ({
         elevation:1
     }
 
-    const createdAt = moment(item?.created_at).format('MMM D')
-
+    
   const openPostDetails = () => {
 
   }
-  
+
+   const onLike = async () => {
+    
+   }
+
+  const createdAt = moment(item?.created_at).format('MMM D')
+
   const likes = []
   const liked = false
 
@@ -121,7 +126,7 @@ const PostCard = ({
 
             <View style={styles.footer}>
               <View style={styles.footerButton}>
-               <TouchableOpacity>
+               <TouchableOpacity onPress={onLike}>
                <Icon name="heart" size={24}
                fill={liked ? theme.colors.rose : 'transparent'}
                 color={ liked ? theme.colors.rose :theme.colors.textLight}
