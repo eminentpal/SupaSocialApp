@@ -37,14 +37,15 @@ export const createOrUpdatePost = async (post) => {
 
 
 
-export const fetchPosts = async (limit=10) => {
+export const fetchPosts  = async (limit=10) => {
     try {
 
         const {data, error} = await supabase
         .from('posts')
         //we select * meaning all posts den also d user's info
         .select(`*,
-            user: users(id,name,image)
+            user: users(id,name,image),
+            postLikes (*)
             `)
         .order('created_at', {ascending:false})
         .limit(limit);
@@ -65,4 +66,55 @@ export const fetchPosts = async (limit=10) => {
     }
 }
 
+
+export const createPostLike = async (postLike) => {
+    try {
+
+        const {data, error} = await supabase
+        .from('postLikes')
+        .insert(postLike)
+        .select()
+        .single();
+
+        if (error) {
+            console.log('postLike error:', error);
+        return {success: false, msg: 'Oops! Could not like your post'}
+        }
+
+        return {success: true, data:data};
+       
+        
+    } catch (error) {
+        console.log('postLike error:', error);
+        return {success: false, msg: 'Could not like your post'}
+    }
+}
+
+
+export const removePostLike = async (postId, userId) => {
+    try {
+
+        const {error} = await supabase
+        .from('postLikes')
+        .delete()
+        //comparing if userID we passied is same with any id
+        //in d postLike table
+        .eq('userId', userId)
+        //same comparison also for post ID.
+        .eq('postId', postId)
+        
+
+        if (error) {
+            console.log('postLike error:', error);
+        return {success: false, msg: 'Oops! Could not remove your post like.'}
+        }
+
+        return {success: true, data:data};
+       
+        
+    } catch (error) {
+        console.log('postLike error:', error);
+        return {success: false, msg: 'Could not remove your post like.'}
+    }
+}
 

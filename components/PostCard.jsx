@@ -1,5 +1,5 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { theme } from '../constants/theme'
 import { hp, wp } from '../helpers/common'
 import Avatar from './Avatar'
@@ -8,6 +8,7 @@ import Icon from '../assets/icons'
 import RenderHtml from 'react-native-render-html';
 import { getSupabaseFileUrl } from '../services/imageService'
 import { Video } from 'expo-av'
+import { createPostLike } from '../services/postService'
 
 
 const textStyle = {
@@ -43,19 +44,37 @@ const PostCard = ({
         elevation:1
     }
 
+    const [likes, setlikes] = useState([])
+        
+     
+    useEffect(() => {
+        setlikes(item?.postLikes)
+    
+    }, [])
+    
     
   const openPostDetails = () => {
 
   }
 
    const onLike = async () => {
-    
+      let data = {
+        userId: currentUser?.id,
+        postId: item?.id
+      }
+    let res = await createPostLike(data);
+     console.log('res', res);
+     
+     if(!res.success) {
+        Alert.alert('Post', 'Something went wrong!')
+     }
+     
+
    }
 
   const createdAt = moment(item?.created_at).format('MMM D')
 
-  const likes = []
-  const liked = false
+    const liked = likes.filter(like => like.userId==currentUser.id)[0] ;
 
   return (
     <View style={[styles.container, hasShadow && shadowStyles]}>
@@ -213,7 +232,7 @@ const styles = StyleSheet.create({
         marginLeft:5,
         flexDirection: 'row',
         alignItems: 'center',
-        gap:18
+        gap:5
     },
     count:{
         color: theme.colors.text,
