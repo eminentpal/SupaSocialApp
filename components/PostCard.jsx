@@ -8,7 +8,7 @@ import Icon from '../assets/icons'
 import RenderHtml from 'react-native-render-html';
 import { getSupabaseFileUrl } from '../services/imageService'
 import { Video } from 'expo-av'
-import { createPostLike } from '../services/postService'
+import { createPostLike, removePostLike } from '../services/postService'
 
 
 const textStyle = {
@@ -58,23 +58,46 @@ const PostCard = ({
   }
 
    const onLike = async () => {
+   
+    if(liked){
+       
+        //remove like
+        let updatedLikes = likes.filter(like => like.userId!=currentUser.id) ;
+         setlikes([...updatedLikes])
+        
+
+       
+
+      let res = await removePostLike(item?.id, currentUser?.id);
+       console.log('removed like', res);
+       if(!res.success) {
+        Alert.alert('Post', 'Something went wrong!')
+     }
+
+    } else {
+        
       let data = {
         userId: currentUser?.id,
         postId: item?.id
       }
+
+      //updates the array with our new like
+      setlikes([...likes, data])
     let res = await createPostLike(data);
-     console.log('res', res);
+     console.log('added like', res);
      
      if(!res.success) {
         Alert.alert('Post', 'Something went wrong!')
      }
      
+    }
+
 
    }
 
   const createdAt = moment(item?.created_at).format('MMM D')
 
-    const liked = likes.filter(like => like.userId==currentUser.id)[0] ;
+    const liked = likes.filter(like => like.userId==currentUser.id)[0] ? true : false ;
 
   return (
     <View style={[styles.container, hasShadow && shadowStyles]}>

@@ -109,7 +109,7 @@ export const removePostLike = async (postId, userId) => {
         return {success: false, msg: 'Oops! Could not remove your post like.'}
         }
 
-        return {success: true, data:data};
+        return {success: true};
        
         
     } catch (error) {
