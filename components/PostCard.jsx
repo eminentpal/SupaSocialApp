@@ -1,15 +1,15 @@
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { theme } from '../constants/theme'
-import { hp, wp } from '../helpers/common'
+import { hp, stripHtmlTags, wp } from '../helpers/common'
 import Avatar from './Avatar'
 import moment from 'moment'
 import Icon from '../assets/icons'
 import RenderHtml from 'react-native-render-html';
-import { getSupabaseFileUrl } from '../services/imageService'
+import { downloadFile, getSupabaseFileUrl } from '../services/imageService'
 import { Video } from 'expo-av'
 import { createPostLike, removePostLike } from '../services/postService'
-
+import Loading from '../components/Loading'
 
 const textStyle = {
     color: theme.colors.dark,
@@ -45,10 +45,15 @@ const PostCard = ({
     }
 
     const [likes, setlikes] = useState([])
+    const [loading, setLoading] = useState(false)
         
      
     useEffect(() => {
+        //added if statement to fix filter undefined error
+        //wen we make a new post
+        if(item?.postLikes) {
         setlikes(item?.postLikes)
+    }
     
     }, [])
     
@@ -62,7 +67,7 @@ const PostCard = ({
     if(liked){
        
         //remove like
-        let updatedLikes = likes.filter(like => like.userId!=currentUser.id) ;
+        let updatedLikes = likes.filter(like => like.userId!=currentUser?.id) ;
          setlikes([...updatedLikes])
         
 
@@ -95,9 +100,23 @@ const PostCard = ({
 
    }
 
+   const onShare =  async () => {
+     let content = {message: stripHtmlTags(item?.body)};
+     if(item?.file){
+      
+        setLoading(true)
+        //download the file and share d local url
+
+        let url = await downloadFile(getSupabaseFileUrl(item?.file).uri)
+           content.url = url
+           setLoading(false)
+    }    
+     Share.share(content)
+   }
+
   const createdAt = moment(item?.created_at).format('MMM D')
 
-    const liked = likes.filter(like => like.userId==currentUser.id)[0] ? true : false ;
+    const liked = likes.filter(like => like.userId==currentUser?.id)[0] ? true : false ;
 
   return (
     <View style={[styles.container, hasShadow && shadowStyles]}>
@@ -189,11 +208,19 @@ const PostCard = ({
               </View>
 
               <View style={styles.footerButton}>
-               <TouchableOpacity>
-               <Icon name="share" size={24}
-                color={theme.colors.textLight}
-                />
-               </TouchableOpacity>
+                {
+                    loading ? (
+                        <Loading size="small" />
+                    ) : (
+                        <TouchableOpacity onPress={onShare}>
+                        <Icon name="share" size={24}
+                         color={theme.colors.textLight}
+                         />
+                        </TouchableOpacity>
+                    )
+
+                }
+              
               </View>
             </View>
     </View>

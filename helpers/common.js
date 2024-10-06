@@ -14,3 +14,9 @@ export const hp = percentage => {
 export const wp = percentage => {
     return (percentage * deviceWidth) / 100;
 }
+
+//using regex remove tags from strings. and gv us raw text
+
+export const stripHtmlTags = (html) =>{
+    return html.replace(/<[^>]*>?/gm, '')
+}
