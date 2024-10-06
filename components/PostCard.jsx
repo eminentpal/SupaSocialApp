@@ -57,9 +57,9 @@ const PostCard = ({
     
     }, [])
     
-    
+     
   const openPostDetails = () => {
-
+     router.push({pathname:'postDetails', params:{postId: item.id}})
   }
 
    const onLike = async () => {
@@ -199,7 +199,7 @@ const PostCard = ({
               </View>
 
               <View style={styles.footerButton}>
-               <TouchableOpacity>
+               <TouchableOpacity onPress={openPostDetails}>
                <Icon name="comment" size={24}
                 color={ theme.colors.textLight}
                 />

@@ -64,7 +64,16 @@ const MainLayout = () => {
     screenOptions={{
         headerShown:false
     }}
+    >
+      
+    <Stack.Screen
+    //this stack is for modal not full screen
+    name="(main)/postDetails"
+    options={{
+        presentation: 'modal'
+    }}
     />
+    </Stack>
   )
 }
 
