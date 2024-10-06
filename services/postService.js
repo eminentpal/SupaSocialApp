@@ -42,10 +42,11 @@ export const fetchPosts  = async (limit=10) => {
 
         const {data, error} = await supabase
         .from('posts')
-        //we select * meaning all posts den also d user's info
+        //we select * meaning all posts den also d user's info, like, comments
         .select(`*,
             user: users(id,name,image),
-            postLikes (*)
+            postLikes (*),
+            comments(count)
             `)
         .order('created_at', {ascending:false})
         .limit(limit);
@@ -74,9 +75,12 @@ export const fetchPostDetails  = async (postId) => {
         //we select * meaning all posts den also d user's info
         .select(`*,
             user: users(id,name,image),
-            postLikes (*)
+            postLikes (*),
+            comments (*, user: users(id, name, image))
             `)
         .eq('id', postId)
+        //added .order after implementing comment functionality
+        .order("created_at", {ascending: false, foreignTable: "comments"})
         .single();
 
     
@@ -146,3 +150,25 @@ export const removePostLike = async (postId, userId) => {
     }
 }
 
+export const createComment = async (comment) => {
+    try {
+
+        const {data, error} = await supabase
+        .from('comments')
+        .insert(comment)
+        .select()
+        .single();
+
+        if (error) {
+            console.log('comment error:', error);
+        return {success: false, msg: 'Oops! Could not create your post'}
+        }
+
+        return {success: true, data:data};
+       
+        
+    } catch (error) {
+        console.log('comment error:', error);
+        return {success: false, msg: 'Could not comment your post'}
+    }
+}

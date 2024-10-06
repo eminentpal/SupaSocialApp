@@ -31,7 +31,8 @@ const PostCard = ({
     item,
     currentUser,
     router,
-    hasShadow = true
+    hasShadow = true,
+    showMoreIcon = true
 }) => {
 
     const shadowStyles = {
@@ -57,8 +58,15 @@ const PostCard = ({
     
     }, [])
     
+
      
   const openPostDetails = () => {
+   //if showmoreicon is not true den means we wana disable
+   //the comment box icon from being clickable.
+   //we set it false on post details. so when we on post details page the
+   //icon will not open the postdeails page again when clicked.
+    if (!showMoreIcon) return null
+
      router.push({pathname:'postDetails', params:{postId: item.id}})
   }
 
@@ -133,7 +141,10 @@ const PostCard = ({
              <Text style={styles.postTime}>{createdAt}</Text>
         </View>
          </View>
-         <TouchableOpacity onPress={openPostDetails}>
+         {
+            //hides d show more incon when post detail is opended.
+            showMoreIcon  && (
+<TouchableOpacity onPress={openPostDetails}>
             <Icon
              name="threeDotsHorizontal"
              size={hp(3.4)}
@@ -141,6 +152,9 @@ const PostCard = ({
              color={theme.colors.text}
              />
          </TouchableOpacity>
+            )
+         }
+         
        </View>
         {/* post body & media */}
 
@@ -204,7 +218,11 @@ const PostCard = ({
                 color={ theme.colors.textLight}
                 />
                </TouchableOpacity>
-               <Text style={styles.count}>0 </Text>
+               <Text style={styles.count}>
+                 {
+                    item?.comments[0]?.count
+                 } 
+                </Text>
               </View>
 
               <View style={styles.footerButton}>
