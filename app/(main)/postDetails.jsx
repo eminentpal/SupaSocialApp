@@ -1,7 +1,7 @@
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { createComment, fetchPostDetails } from '../../services/postService';
+import { createComment, fetchPostDetails, removeComment } from '../../services/postService';
 import { hp, wp } from '../../helpers/common';
 import { theme } from '../../constants/theme';
 import PostCard from '../../components/PostCard';
@@ -61,10 +61,23 @@ const PostDetails = () => {
      } else {
       Alert.alert('Comment', res.msg)
      }
-
-
-
   }
+
+  const onDeleteComment = async (comment) =>{
+    let res = await removeComment(comment?.id)
+
+    if (res.success) {
+
+      setPost(prevPost => {
+       let updatedPost = {...prevPost}
+       updatedPost.comments = updatedPost.comments.filter(c => c.id != comment.id)
+       return updatedPost;
+      })
+   
+
+    }
+  }
+
 
   //this prevent us from getting filter undefined error and also
   //so the likes on post can show
@@ -131,7 +144,8 @@ const PostDetails = () => {
              item={comment}
              key={comment?.id?.toString()}
              canDelete={user.id == comment.userId || user.id == post.userId}
-          />)
+              onDelete={onDeleteComment}
+             />)
       }
       {
         post?.comments?.length == 0 && (
