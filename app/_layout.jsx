@@ -42,7 +42,7 @@ const MainLayout = () => {
           //using router.replace prevent users
           //from going back to the screen that
           //was replaced
-          router.replace('[main]/home')
+          router.replace('home')
         } else {
           //set auth null
           setAuth(null)

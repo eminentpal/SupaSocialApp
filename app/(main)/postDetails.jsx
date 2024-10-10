@@ -11,6 +11,8 @@ import Loading from "../../components/Loading";
 import { TouchableOpacity } from 'react-native';
 import Icon from '../../assets/icons';
 import CommentItem from '../../components/CommentItem';
+import { supabase } from '../../lib/supabase';
+import { getUserData } from '../../services/userService';
 
 const PostDetails = () => {
 
@@ -22,12 +24,50 @@ const PostDetails = () => {
   const inputRef = useRef(null)
   const commentRef = useRef(null)
   const [loading, setLoading] = useState(false)
+ 
+ const handleNewComment = async (payload) => {
+
+  
+      console.log('new comment', payload.new)
+      if (payload.new) {
+        let newComment = {...payload.new};
+        let res = await getUserData(newComment.userId);
+        newComment.user = res.success? res.data: {};
+        setPost(prevPost =>{
+          return{
+            ...prevPost,
+            //we adding d newComment as first in d arrray of prevPost.comments
+            comments: [newComment, ...prevPost.comments]
+          }
+        })
+      }
+ }
+
+
   useEffect(() => {
 
-     getPostDetails()
-  },[])
+    //Realtime changes when we make new cooment on a post
+    //row level realtime changes
+    //if we dont listen to a specific postID it will
+    //listen to all comments instead of by postID
+    //check documentation on supabase site
+    let commentChannel = supabase
+     .channel('comments')
+     .on('postgres_changes', {
+       event:'INSERT',
+       schema:'public', 
+       table: 'comments',
+       filter:`postId=eq.${postId}`
+      }, handleNewComment)
+    .subscribe()
 
+    getPostDetails();
 
+    return() => {
+       supabase.removeChannel(commentChannel)
+    }
+
+  }, [])
 
 
   const getPostDetails = async () => {
