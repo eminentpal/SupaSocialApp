@@ -35,6 +35,24 @@ const Home = () => {
        } 
     }
 
+    
+
+   //  const handleNewPostComment = async (payload) => {
+
+   //    console.log('hh',payload.new)
+      
+
+   //    // if( payload.new){
+   //    //    let newComment = {...payload.new};
+   //    //    let res = await getUserData(newPost.userId);
+   //    //    //if success we set the post to d data else empty object
+   //    //    newPost.user = res.success ? res.data : {}
+   //    //    //we putting new post first bfr prevPosts 
+   //    //    //cus we want the new post to be first on the list
+   //    //    setPosts(prevPosts => [newPost, ...prevPosts])
+   //    //  } 
+  
+   // }
     useEffect(() => {
 
       //Realtime changes when we make new post
@@ -42,14 +60,21 @@ const Home = () => {
        .channel('post')
        .on('postgres_changes', {event:'*', schema:'public', table: 'posts'}, handlePostEvent)
       .subscribe()
+
+      // let newpostcommentChannel = supabase
+      //  .channel('post')
+      //  .on('postgres_changes', {event:'INSERT', schema:'public', table: 'comments'}, handleNewPostComment)
+      // .subscribe()
       
       //this function was removed cus we calling it on the flatlist
       //getPosts()
 
       return() => {
          supabase.removeChannel(postChannel)
+         // supabase.removeChannel(newpostcommentChannel)
       }
 
+  
     }, [])
 
     const getPosts = async () =>{
@@ -81,11 +106,11 @@ const Home = () => {
               <Icon  name="heart" size={hp(3.2)} strokeWidth={2} color={theme.colors.text} />
            </Pressable>
 
-           <Pressable onPress={()=> router.push('[main]/newPost')}>
+           <Pressable onPress={()=> router.push('newPost')}>
               <Icon  name="plus" size={hp(3.2)} strokeWidth={2} color={theme.colors.text} />
            </Pressable>
 
-           <Pressable onPress={()=> router.push('[main]/profile')}>
+           <Pressable onPress={()=> router.push('profile')}>
              <Avatar
              uri={user?.image}
              size={hp(4.3)}

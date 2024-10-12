@@ -13,7 +13,7 @@ const CommentItem = ({item,
 }) => {
 
  
-    const createdAt = moment(item?.created_at).format('MMM d');
+    const createdAt = moment(item?.created_at).format('MMM DD');
     
     const handleDelete = () => {
          //show confirm modal
