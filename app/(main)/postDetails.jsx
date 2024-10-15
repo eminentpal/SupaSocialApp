@@ -118,6 +118,14 @@ const PostDetails = () => {
     }
   }
 
+  const onDeletePost = async (item) => {
+    
+  }
+
+  const onEditPost = async (item) => {
+    
+  }
+
 
   //this prevent us from getting filter undefined error and also
   //so the likes on post can show
@@ -154,6 +162,9 @@ const PostDetails = () => {
       //we use dx to disbale the comment button from opening the 
       //post details card again when clicked.
       showMoreIcon = {false}
+      showDelte={false}
+      onDelete={onDeletePost}
+      onEdit={onEditPots}
       />
        {/* {comment input} */}
      <View style={styles.inputContainer}>
