@@ -176,7 +176,7 @@ const PostCard = ({
          
          {
             showDelete && currentUser.id==item?.userId && (
-                <View style={styles.action}> 
+                <View style={styles.actions}> 
                    <TouchableOpacity onPress={()=>onEdit(item)}>
             <Icon
              name="edit"
@@ -343,6 +343,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap:5
+    },
+    actions:{
+        flexDirection: 'row',
+        alignItems:'center',
+        gap:18
     },
     count:{
         color: theme.colors.text,

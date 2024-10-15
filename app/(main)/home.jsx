@@ -27,12 +27,26 @@ const Home = () => {
        if(payload.eventType == 'INSERT' && payload?.new?.id){
          let newPost = {...payload.new};
          let res = await getUserData(newPost.userId);
+         //we added this two line to fix unhandled error when 
+         //we make a new post
+         newPost.postLikes = []
+         newPost.comments = [{count: 0}]
+
+         
          //if success we set the post to d data else empty object
          newPost.user = res.success ? res.data : {}
          //we putting new post first bfr prevPosts 
          //cus we want the new post to be first on the list
          setPosts(prevPosts => [newPost, ...prevPosts])
+
        } 
+
+       if (payload.eventType =='DELETE' && payload.old.id) {
+         setPosts (prevPosts => {
+            let updatedPosts = prevPosts.filter(post=> post.id != payload.old.id)
+            return updatedPosts
+         })
+       }
     }
 
     
