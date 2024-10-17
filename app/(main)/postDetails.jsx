@@ -129,7 +129,8 @@ const PostDetails = () => {
   }
 
   const onEditPost = async (item) => {
-    
+    router.back()
+    router.push({pathname: 'newPost', params:{...item}})
   }
 
 

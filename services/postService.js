@@ -1,6 +1,8 @@
 import { supabase } from "../lib/supabase";
 import { uploadFile } from "./imageService";
 
+
+
 export const createOrUpdatePost = async (post) => {
     try {
         //upload image
@@ -34,8 +36,6 @@ export const createOrUpdatePost = async (post) => {
         return {success: false, msg: 'Could not create your post!'}
     }
 }
-
-
 
 export const fetchPosts  = async (limit=10) => {
     try {

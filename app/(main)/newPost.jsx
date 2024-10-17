@@ -1,5 +1,5 @@
 import { Pressable, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, TouchableWithoutFeedback, Keyboard, TextInput, Alert } from 'react-native'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ScreenWrapper from '../../components/ScreenWrapper'
 import Header from '../../components/Header'
 import { hp, wp } from '../../helpers/common'
@@ -7,7 +7,7 @@ import { theme } from '../../constants/theme'
 import Avatar from '../../components/Avatar'
 import { useAuth } from '../../contexts/AuthContext'
 import RichTextEditor from '../../components/RichTextEditor'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import Icon from '../../assets/icons'
 import Button from '../../components/Button'
 import * as ImagePicker from 'expo-image-picker';
@@ -24,7 +24,7 @@ import { createOrUpdatePost } from '../../services/postService'
 //  }
 
 const NewPost = () => {
-
+    const post = useLocalSearchParams();
      const {user} = useAuth() 
      const bodyRef = useRef("")
      const editorRef = useRef(null);
@@ -33,6 +33,18 @@ const NewPost = () => {
      const [file, setFile] = useState(file);
 
     
+
+     useEffect(() =>{
+
+      if (post && post.id) {
+        bodyRef.current = post.body;
+        setFile(post.file || null);
+        setTimeout(() =>{
+          editorRef?.current?.setContentHTML(post.body);
+        }, 300)
+      }
+  
+     },[])
 
     const onPick= async (isImage) => {
 
@@ -108,6 +120,8 @@ const NewPost = () => {
           userId: user?.id
         }
 
+        if(post && post.id) data.id = post.id
+
         //create post
         setLoading(true)
 
@@ -166,7 +180,7 @@ const NewPost = () => {
      
         <Button 
       buttonStyle={{height:hp(6.2)}}
-      title='Post'   
+      title={post && post.id? "Update" : 'Post'}   
       loading={loading}
       hasShadow={false}
       onPress={onSubmit}

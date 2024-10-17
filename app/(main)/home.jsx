@@ -47,6 +47,22 @@ const Home = () => {
             return updatedPosts
          })
        }
+
+       //for update post
+
+       if(payload.eventType == 'UPDATE' && payload?.new?.id){
+         setPosts(prevPosts => {
+            let updatedPosts = prevPosts.map(post =>{
+               if (post.id == payload.new.id) {
+                  post.body = payload.new.body;
+                  post.file = payload.new.file
+               }
+               return post
+            });
+            return updatedPosts;
+         })
+
+       } 
     }
 
     
