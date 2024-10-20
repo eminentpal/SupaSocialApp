@@ -111,7 +111,7 @@ const Home = () => {
 
       //call api here
       if(!hasMore) return null;
-       limit = limit + 4;
+       limit = limit + 10;
 
        console.log('fetch post limit', limit)
        let res = await fetchPosts(limit)
