@@ -13,6 +13,7 @@ import Icon from '../../assets/icons';
 import CommentItem from '../../components/CommentItem';
 import { supabase } from '../../lib/supabase';
 import { getUserData } from '../../services/userService';
+import { createNotification } from '../../services/notificationService';
 
 const PostDetails = () => {
 
@@ -91,9 +92,23 @@ const PostDetails = () => {
      let res = await createComment(data)
      setLoading(false);
 
-     if (res.success) {
       //send notification to post owner
-   console.log(res)
+     if (res.success) {
+     
+       //if the user id of d person that commented
+        //is not equals to the post.id, meaning he is not the
+        //one that owns d post, only den we send notification
+
+      if (user.id!=post.userId) {
+        let notify = {
+          senderId: user.id,
+          receiverId: post.userId,
+          title:'commented on your post',
+          data: JSON.stringify({postId: post.id, commentId: res?.data?.id})
+
+        }
+         createNotification(notify)
+      }
       //clear comment box
       inputRef?.current?.clear();
       commentRef.current = "";
