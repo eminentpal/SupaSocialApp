@@ -27,7 +27,7 @@ export const fetchNotifications  = async (receiverId) => {
     try {
 
         const {data, error} = await supabase
-        .from('notification')
+        .from('notifications')
          .select(`*,
             sender: senderId(id,name,image)
             `)

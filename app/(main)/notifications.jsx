@@ -22,6 +22,7 @@ const Notifications = () => {
     let res = await fetchNotifications(user.id);
 
     if(res.success) setnotifications(res.data)
+      console.log(notifications)
 
   }
 
