@@ -22,6 +22,7 @@ const Home = () => {
     const router = useRouter()
     const [posts, setPosts] = useState([])
     const [hasMore, setHasMore] = useState(true)
+    const [notificationCount, setnotificationCount] = useState(0)
 
     const handlePostEvent = async (payload) => {
        if(payload.eventType == 'INSERT' && payload?.new?.id){
@@ -67,6 +68,13 @@ const Home = () => {
 
     
 
+  const handleNewNotification = async (payload) => {
+   if (payload.eventType === 'INSERT' && payload.new.id) {
+      setnotificationCount(prev => prev+1) 
+   }
+  }
+
+
    //  const handleNewPostComment = async (payload) => {
 
    //    console.log('hh',payload.new)
@@ -99,9 +107,17 @@ const Home = () => {
       //this function was removed cus we calling it on the flatlist
       //getPosts()
 
+      //Realtime changes when a new notification drops
+      let notificationChannel = supabase
+       .channel('notifications')
+       .on('postgres_changes', {event:'INSERT', schema:'public', table: 'notifications', filter: `receiverId = eq.${user.id}`}, handleNewNotification)
+      .subscribe()
+
+
       return() => {
          supabase.removeChannel(postChannel)
          // supabase.removeChannel(newpostcommentChannel)
+         supabase.removeChannel(notificationChannel)
       }
 
   
@@ -134,6 +150,15 @@ const Home = () => {
          <View style={styles.icons}>
            <Pressable onPress={()=> router.push('notifications')}>
               <Icon  name="heart" size={hp(3.2)} strokeWidth={2} color={theme.colors.text} />
+             {
+               notificationCount > 0 && (
+                  <View style={styles.pill}>
+                    <Text style={styles.pill}>
+                     {notificationCount}
+                    </Text>
+                  </View>
+               )
+             }
            </Pressable>
 
            <Pressable onPress={()=> router.push('newPost')}>

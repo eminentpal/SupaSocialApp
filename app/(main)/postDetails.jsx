@@ -17,7 +17,7 @@ import { createNotification } from '../../services/notificationService';
 
 const PostDetails = () => {
 
-  const {postId} = useLocalSearchParams();
+  const {postId, commentId} = useLocalSearchParams();
   const [post, setPost] = useState(null)
   const [startLoading, setStartLoading] = useState(true)
   const router = useRouter()
@@ -218,6 +218,7 @@ const PostDetails = () => {
              key={comment?.id?.toString()}
              canDelete={user.id == comment.userId || user.id == post.userId}
               onDelete={onDeleteComment}
+              highlight = {comment.id == commentId}
              />)
       }
       {
