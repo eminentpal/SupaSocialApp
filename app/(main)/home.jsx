@@ -148,7 +148,10 @@ const Home = () => {
        <View style={styles.header}>
          <Text style={styles.title} >LinkUp</Text>
          <View style={styles.icons}>
-           <Pressable onPress={()=> router.push('notifications')}>
+           <Pressable onPress={()=> {
+            setnotificationCount(0)
+            router.push('notifications')
+            }}>
               <Icon  name="heart" size={hp(3.2)} strokeWidth={2} color={theme.colors.text} />
              {
                notificationCount > 0 && (
