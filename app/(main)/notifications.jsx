@@ -7,7 +7,7 @@ import { theme } from '../../constants/theme'
 import ScreenWrapper from '../../components/ScreenWrapper'
 import {  useRouter } from 'expo-router'
 import NotificationItem from '../../components/NotificationItem'
-
+import Header from "../../components/Header";
 const Notifications = () => {
 
    const [notifications, setnotifications] = useState([])
@@ -22,13 +22,14 @@ const Notifications = () => {
     let res = await fetchNotifications(user.id);
 
     if(res.success) setnotifications(res.data)
-      console.log(notifications)
+
 
   }
 
   return (
     <ScreenWrapper>
       <View style={styles.container}>
+        <Header title="Notifications" />
         <ScrollView showsHorizontalScrollIndicator={false} > 
          {
           notifications.map(item=>{
